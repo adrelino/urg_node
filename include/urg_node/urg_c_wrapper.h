@@ -150,6 +150,9 @@ namespace urg_node
     int cluster_;
     int skip_;
 
+    unsigned long long diff1, diff2;
+    bool first;
+
     ros::Duration system_latency_;
     ros::Duration user_latency_;
 

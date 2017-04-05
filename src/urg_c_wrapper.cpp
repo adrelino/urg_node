@@ -172,6 +172,7 @@ bool URGCWrapper::grabScan(const sensor_msgs::LaserScanPtr& msg){
   int num_beams = 0;
   long time_stamp = 0;
   unsigned long long system_time_stamp = 0;
+  unsigned long long system_time_stamp_ros = ros::Time::now().toNSec();
 
   if(use_intensity_){
   	num_beams = urg_get_distance_intensity(&urg_, &data_[0], &intensity_[0], &time_stamp, &system_time_stamp);
@@ -182,9 +183,28 @@ bool URGCWrapper::grabScan(const sensor_msgs::LaserScanPtr& msg){
     return false;
   }
 
+  unsigned long long system_time_stamp_ros_after = ros::Time::now().toNSec();
+
+
+  unsigned long long time_stamp_nano = (unsigned long long)time_stamp*1000000;
+
+  std::cout<<"system_time_stamp_ros="<<system_time_stamp_ros<<"\t";
+  std::cout<<"diff="<<system_time_stamp-system_time_stamp_ros<<"\t";
+  std::cout<<"system_time="<<system_time_stamp<<"\t";
+  std::cout<<"diff="<<system_time_stamp-time_stamp_nano<<"\t";
+  std::cout<<"time_stamp_nano="<<time_stamp_nano<<"\t";
+  std::cout<<"system_time_stamp_ros_after="<<system_time_stamp_ros_after<<"\t";
+
+
   // Fill scan
-  msg->header.stamp.fromNSec((uint64_t)system_time_stamp);
-  msg->header.stamp = msg->header.stamp + system_latency_ + user_latency_ + getAngularTimeOffset();
+  //msg->header.stamp.fromNSec((uint64_t)system_time_stamp);
+  //always constant offset to system_time_stamp
+  //msg->header.stamp = msg->header.stamp + system_latency_ + user_latency_ + getAngularTimeOffset();
+ // std::cout<<"header_stamp_diff="<<msg->header.stamp.toNSec()-system_time_stamp_ros<<std::endl;
+  std::cout<<std::endl;
+
+  msg->header.stamp = ros::Time::now(); //just use ros time now for imu sync
+
   msg->ranges.resize(num_beams);
   if(use_intensity_){
   	msg->intensities.resize(num_beams);

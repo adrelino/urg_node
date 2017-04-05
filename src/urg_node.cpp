@@ -199,18 +199,18 @@ int main(int argc, char **argv)
   pnh.param<int>("ip_port", ip_port, 10940);
 
   std::string serial_port;
-  pnh.param<std::string>("serial_port", serial_port, "/dev/ttyACM0");
+  pnh.param<std::string>("serial_port", serial_port, "/dev/sensors/hokuyo");//"/dev/ttyACM0");
   int serial_baud;
   pnh.param<int>("serial_baud", serial_baud, 115200);
 
   bool calibrate_time;
-  pnh.param<bool>("calibrate_time", calibrate_time, false);
+  pnh.param<bool>("calibrate_time", calibrate_time, true);
 
   bool publish_intensity;
-  pnh.param<bool>("publish_intensity", publish_intensity, true);
+  pnh.param<bool>("publish_intensity", publish_intensity, false);
 
   bool publish_multiecho;
-  pnh.param<bool>("publish_multiecho", publish_multiecho, true);
+  pnh.param<bool>("publish_multiecho", publish_multiecho, false);
 
   int error_limit;
   pnh.param<int>("error_limit", error_limit, 4);
@@ -351,6 +351,7 @@ int main(int argc, char **argv)
 		      }
 		    } else {
 		      const sensor_msgs::LaserScanPtr msg(new sensor_msgs::LaserScan());
+			  //std::cout<<"grabScan now="<<ros::Time::now()<<"\t";
 		      if(urg_->grabScan(msg)){
 		        laser_pub.publish(msg);
 		        laser_freq_->tick();
